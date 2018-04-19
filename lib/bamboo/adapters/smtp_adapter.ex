@@ -90,7 +90,6 @@ defmodule Bamboo.SMTPAdapter do
   end
   defp handle_response(response) do
     parts = String.split(response, " ")
-    Logger.warn(inspect parts)
     new_response(status_code: nil, headers: %{}, body: String.trim(Enum.at(parts, 1)))
   end
 
