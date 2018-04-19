@@ -35,6 +35,9 @@ defmodule Bamboo.SMTPAdapter do
 
   require Logger
 
+  import Bamboo.ApiError
+  import Bamboo.Response, only: [new_response: 1]
+
   @required_configuration [:server, :port]
   @default_configuration %{tls: :if_available, ssl: :false, retries: 1, transport: :gen_smtp_client}
   @tls_versions ~w(tlsv1 tlsv1.1 tlsv1.2)
@@ -82,10 +85,13 @@ defmodule Bamboo.SMTPAdapter do
   def supports_attachments?, do: true
 
   defp handle_response({:error, reason, detail}) do
-    raise SMTPError, {reason, detail}
+    # raise SMTPError, {reason, detail}
+    raise_api_error("SMTP adapter", new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
   end
-  defp handle_response(_) do
-    :ok
+  defp handle_response(response) do
+    parts = String.split(response, " ")
+    Logger.warn(inspect parts)
+    new_response(status_code: nil, headers: %{}, body: String.trim(Enum.at(parts, 1)))
   end
 
   defp add_bcc(body, %Bamboo.Email{bcc: recipients}) do
