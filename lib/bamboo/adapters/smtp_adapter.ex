@@ -83,7 +83,7 @@ defmodule Bamboo.SMTPAdapter do
 
   defp handle_response({:error, _reason, detail}) do
     # raise SMTPError, {reason, detail}
-    Bamboo.ApiError.raise_api_error("SMTP adapter", new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
+    Bamboo.ApiError.raise_api_error("SMTP adapter", Bamboo.Response.new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
   end
   defp handle_response(response) do
     parts = String.split(response, " ")
