@@ -35,9 +35,6 @@ defmodule Bamboo.SMTPAdapter do
 
   require Logger
 
-  import Bamboo.ApiError
-  import Bamboo.Response, only: [new_response: 1]
-
   @required_configuration [:server, :port]
   @default_configuration %{tls: :if_available, ssl: :false, retries: 1, transport: :gen_smtp_client}
   @tls_versions ~w(tlsv1 tlsv1.1 tlsv1.2)
@@ -86,11 +83,11 @@ defmodule Bamboo.SMTPAdapter do
 
   defp handle_response({:error, _reason, detail}) do
     # raise SMTPError, {reason, detail}
-    raise_api_error("SMTP adapter", new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
+    Bamboo.ApiError.raise_api_error("SMTP adapter", new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
   end
   defp handle_response(response) do
     parts = String.split(response, " ")
-    new_response(status_code: nil, headers: %{}, body: String.trim(Enum.at(parts, 1)))
+    Bamboo.Response.new_response(status_code: nil, headers: %{}, body: String.trim(Enum.at(parts, 1)))
   end
 
   defp add_bcc(body, %Bamboo.Email{bcc: recipients}) do
