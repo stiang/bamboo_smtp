@@ -84,7 +84,7 @@ defmodule Bamboo.SMTPAdapter do
   @doc false
   def supports_attachments?, do: true
 
-  defp handle_response({:error, reason, detail}) do
+  defp handle_response({:error, _reason, detail}) do
     # raise SMTPError, {reason, detail}
     raise_api_error("SMTP adapter", new_response(status_code: nil, headers: %{}, body: "#{inspect detail}"), %{})
   end
